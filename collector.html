@@ -117,6 +117,21 @@ tbody tr:hover td{background:#1c2128}
 /* ── Tooltip / Notice ────────────────────────────────────── */
 .notice{background:#1f2d1f;border:1px solid #2d4a2d;border-radius:8px;padding:10px 14px;font-size:12px;color:#7ee787;display:flex;align-items:flex-start;gap:8px;margin-bottom:12px}
 .notice.warn{background:#2d2200;border-color:#4a3a00;color:#e3b341}
+
+/* ── Bookmarklet ─────────────────────────────────────────── */
+.bm-steps{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.bm-step{display:flex;align-items:flex-start;gap:12px;font-size:13px;color:#c9d1d9}
+.bm-num{width:22px;height:22px;border-radius:50%;background:#1f6feb;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.bm-link{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:#0d1117;border:2px dashed #58a6ff;border-radius:8px;color:#58a6ff;font-size:12px;font-weight:600;cursor:grab;text-decoration:none;user-select:none;transition:background .2s;white-space:nowrap}
+.bm-link:hover{background:#0d2137;text-decoration:none}
+.naver-status{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.naver-status-item{background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;transition:border-color .3s}
+.naver-status-item .cafe-name{font-size:12px;color:#8b949e}
+.naver-status-item .cafe-count{font-size:18px;font-weight:700;color:#484f58}
+.naver-status-item.received{border-color:#238636}
+.naver-status-item.received .cafe-count{color:#56d364}
+.pulse{display:inline-block;width:8px;height:8px;border-radius:50%;background:#e3b341;animation:blink 1.2s ease-in-out infinite;margin-right:6px}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
 </style>
 </head>
 <body>
@@ -185,20 +200,54 @@ tbody tr:hover td{background:#1c2128}
     </div>
   </div>
 
-  <!-- ── 네이버 쿠키 설정 ── -->
+  <!-- ── 네이버 카페 북마클릿 ── -->
   <div class="card" id="naverCard" style="display:none">
-    <div class="card-title">🔑 네이버 카페 쿠키 설정</div>
-    <div class="notice warn">⚠️ 네이버 카페는 로그인 쿠키가 필요합니다. Chrome → F12 → Application → Cookies → cafe.naver.com 에서 값을 복사하세요.</div>
-    <div class="grid-2">
-      <div class="field">
-        <label class="field-label">NID_AUT</label>
-        <input type="text" id="nidAut" placeholder="NID_AUT 쿠키 값" style="background:#0d1117;border:1px solid #30363d;color:#e6edf3;padding:9px 12px;border-radius:8px;font-size:11px;width:100%;font-family:monospace">
+    <div class="card-title">📌 네이버 카페 수집 방법 (북마클릿)</div>
+    <div class="notice warn">⚠️ 보안 정책상 웹 툴에서 네이버 쿠키를 직접 전달할 수 없습니다. 아래 북마클릿을 사용하면 로그인 상태에서 데이터를 바로 가져올 수 있습니다.</div>
+
+    <div class="bm-steps">
+      <div class="bm-step">
+        <div class="bm-num">1</div>
+        <div>아래 버튼을 <strong>북마크 바로 드래그</strong>하거나 마우스 오른쪽 클릭 → 링크 저장<br>
+          <div style="margin-top:8px">
+            <a class="bm-link" id="bookmarkletLink" href="">📎 네이버카페 수집기</a>
+          </div>
+        </div>
       </div>
-      <div class="field">
-        <label class="field-label">NID_SES</label>
-        <input type="text" id="nidSes" placeholder="NID_SES 쿠키 값" style="background:#0d1117;border:1px solid #30363d;color:#e6edf3;padding:9px 12px;border-radius:8px;font-size:11px;width:100%;font-family:monospace">
+      <div class="bm-step">
+        <div class="bm-num">2</div>
+        <div>네이버에 <strong>로그인된 상태</strong>로 카페 게시판 목록 페이지를 엽니다<br>
+          <span style="font-size:11px;color:#6e7681;margin-top:4px;display:block">
+            · MLB9이닝스: cafe.naver.com/f-e/cafes/27851354/menus/0<br>
+            · 컴프야26: cafe.naver.com/f-e/cafes/28683505/menus/0
+          </span>
+        </div>
+      </div>
+      <div class="bm-step">
+        <div class="bm-num">3</div>
+        <div>저장한 <strong>북마클릿 클릭</strong> → 게시글 자동 추출 후 이 탭으로 전송됩니다</div>
+      </div>
+      <div class="bm-step">
+        <div class="bm-num">4</div>
+        <div>두 카페 모두 완료 후 <strong>수집 시작</strong></div>
       </div>
     </div>
+
+    <div class="naver-status">
+      <div class="naver-status-item" id="naverStatus_27851354">
+        <div>
+          <div class="cafe-name"><span class="pulse"></span>MLB9이닝스 대기 중</div>
+        </div>
+        <div class="cafe-count" id="naverCount_27851354">0</div>
+      </div>
+      <div class="naver-status-item" id="naverStatus_28683505">
+        <div>
+          <div class="cafe-name"><span class="pulse"></span>컴프야26 대기 중</div>
+        </div>
+        <div class="cafe-count" id="naverCount_28683505">0</div>
+      </div>
+    </div>
+    <div style="margin-top:8px;font-size:11px;color:#484f58">수신된 데이터는 수집 시작 후 날짜 필터링 및 분류에 사용됩니다</div>
   </div>
 
   <!-- ── 카테고리 필터 ── -->
@@ -598,76 +647,68 @@ async function scrapeRivalsOfficial(dateFrom, dateTo, log) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  네이버 카페 SCRAPER  (CORS 프록시 경유)
+//  네이버 카페 — 북마클릿 버퍼 기반
 // ═══════════════════════════════════════════════════════════════
-async function scrapeNaverCafe(cafeName, cafeId, menuId, gameName, dateFrom, dateTo, log) {
-  const nidAut = document.getElementById('nidAut').value.trim();
-  const nidSes = document.getElementById('nidSes').value.trim();
-  if (!nidAut && !nidSes) {
-    log(`⚠️ 네이버 쿠키 미입력 — ${cafeName} 수집 건너뜀`, 'warn');
+
+// cafeId → article[] 버퍼 (북마클릿이 BroadcastChannel로 채워줌)
+const naverBuffer = {};
+
+// BroadcastChannel 수신 — 북마클릿이 Naver 탭에서 데이터 전송 시 수신
+const _naverCh = new BroadcastChannel('naver_cafe_collector');
+_naverCh.onmessage = ({ data }) => {
+  if (data.type !== 'articles') return;
+  const { cafeId, cafeName, articles } = data;
+  naverBuffer[cafeId] = articles;
+
+  // 상태 UI 업데이트
+  const statusEl = document.getElementById(`naverStatus_${cafeId}`);
+  const countEl  = document.getElementById(`naverCount_${cafeId}`);
+  if (statusEl && countEl) {
+    statusEl.classList.add('received');
+    statusEl.querySelector('.cafe-name').innerHTML = `✅ ${cafeName}`;
+    countEl.textContent = articles.length;
+  }
+  // 북마클릿이 닫힌 탭에서 전송하므로 alert 불필요 — 상태 UI로 확인
+};
+
+function scrapeNaverCafe(cafeName, cafeId, menuId, gameName, dateFrom, dateTo, log) {
+  const raw = naverBuffer[cafeId] || [];
+
+  if (!raw.length) {
+    log(`⚠️ 네이버카페 ${cafeName} — 수신 데이터 없음`, 'warn');
+    log(`  → 북마클릿을 카페 게시판 페이지에서 실행 후 재수집하세요`, 'warn');
     return [];
   }
 
-  // CORS 프록시는 쿠키 전달이 불가하므로, allorigins.win 으로 시도 후 실패 시 안내
   const posts = [];
-  const today_str = today();
+  for (const item of raw) {
+    // 날짜 정규화 (북마클릿에서 전달된 raw 날짜 → YYYY-MM-DD)
+    let dateStr = item.date || '';
+    // "2026.04.23." or "26.04.23" or "04.23" or "17:30"
+    const d4 = dateStr.match(/(\d{4})[./](\d{2})[./](\d{2})/);
+    const d2 = dateStr.match(/^(\d{2})[./](\d{2})[./](\d{2})/);
+    const d_md= dateStr.match(/^(\d{2})[./](\d{2})/);
+    if (d4)       dateStr = `${d4[1]}-${d4[2]}-${d4[3]}`;
+    else if (d2)  dateStr = `20${d2[1]}-${d2[2]}-${d2[3]}`;
+    else if (d_md) dateStr = `${new Date().getFullYear()}-${d_md[1].padStart(2,'0')}-${d_md[2].padStart(2,'0')}`;
+    else if (/^\d{1,2}:\d{2}$/.test(dateStr.trim())) dateStr = today();
+    else dateStr = today();
 
-  for (let page = 1; page <= 5; page++) {
-    const url = `https://m.cafe.naver.com/ArticleList.nhn`
-              + `?search.clubid=${cafeId}&search.menuid=${menuId}`
-              + `&search.page=${page}&userDisplay=50`;
-    log(`네이버카페 ${cafeName} 페이지 ${page}`, 'info');
+    if (dateStr < dateFrom || dateStr > dateTo) continue;
 
-    // allorigins.win 은 쿠키를 전달할 수 없어 로그인 필요 페이지는 리다이렉트될 수 있음
-    const html = await proxyGet(url, 20000);
-    if (!html || html.length < 300) {
-      log(`  → 응답 없음 (CORS 제한 또는 로그인 필요)`, 'warn');
-      log(`  → 💡 Python 서버(baseball_collector.py)를 사용하면 쿠키 인증으로 수집 가능`, 'warn');
-      break;
-    }
-
-    // Check for login redirect
-    if (html.includes('nid.naver.com/nidlogin') || html.includes('로그인') && html.length < 2000) {
-      log(`  → 로그인 페이지 리다이렉트 — CORS 프록시에서 쿠키 전달 불가`, 'warn');
-      log(`  → 💡 Python 버전(baseball_collector.py)으로 쿠키 인증 수집 사용 권장`, 'warn');
-      break;
-    }
-
-    const liBlocks = [...html.matchAll(/<li[^>]*>([\s\S]*?)<\/li>/g)].map(m => m[1]);
-    let oldestDate = '9999', pageCount = 0;
-
-    for (const block of liBlocks) {
-      const artM = block.match(/articleid=(\d+)/) || block.match(/href="[^"]+\/(\d{6,})"/);
-      if (!artM) continue;
-      const artId = artM[1];
-
-      const tM = block.match(/class="[^"]*title[^"]*"[^>]*>([\s\S]*?)<\//) ||
-                 block.match(/<strong[^>]*>([\s\S]*?)<\/strong>/) ||
-                 block.match(/articleid=\d+[^>]*>([\s\S]*?)<\/a>/);
-      const title = tM ? esc(stripTags(tM[1])).trim() : '';
-      if (!title || title.length < 2) continue;
-
-      const dM = block.match(/(\d{4})[.\-\/](\d{2})[.\-\/](\d{2})/);
-      let dateStr = today_str;
-      if (dM) dateStr = `${dM[1]}-${dM[2]}-${dM[3]}`;
-      else {
-        const dM2 = block.match(/(\d{2})[./](\d{2})/);
-        if (dM2) dateStr = `${new Date().getFullYear()}-${dM2[1].padStart(2,'0')}-${dM2[2].padStart(2,'0')}`;
-      }
-
-      const postUrl = `https://cafe.naver.com/ArticleRead.nhn?clubid=${cafeId}&articleid=${artId}`;
-      if (dateStr < oldestDate) oldestDate = dateStr;
-      if (dateStr < dateFrom || dateStr > dateTo) continue;
-
-      posts.push({ title, url: postUrl, date: dateStr, views: '0',
-                   source: `네이버카페(${cafeName})`, game: gameName, body: '', images: [] });
-      pageCount++;
-    }
-
-    log(`  → ${pageCount}건 수집, 최소날짜=${oldestDate}`);
-    if (oldestDate < dateFrom || !pageCount) break;
-    await sleep(600);
+    posts.push({
+      title : esc(item.title || ''),
+      url   : item.url || '',
+      date  : dateStr,
+      views : '0',
+      source: `네이버카페(${cafeName})`,
+      game  : gameName,
+      body  : item.body || '',
+      images: [],
+    });
   }
+
+  log(`네이버카페 ${cafeName} — 버퍼 ${raw.length}건 중 날짜 필터 후 ${posts.length}건`);
   return posts;
 }
 
@@ -741,6 +782,81 @@ let isRunning = false;
   const from = new Date(d); from.setDate(d.getDate()-1);
   document.getElementById('dateFrom').value = fmt(from);
   document.getElementById('dateTo').value   = fmt(d);
+})();
+
+// ── 북마클릿 코드 생성 ────────────────────────────────────────
+(function buildBookmarklet() {
+  // 북마클릿 코드 — 새 Naver Cafe (f-e / React SPA) 전용
+  const bmCode = `(function(){
+/* ── 1단계: /articles/숫자 형식 링크 수집 (f-e 신버전) ── */
+var links=Array.from(document.querySelectorAll('a[href]')).filter(function(a){
+  var h=a.getAttribute('href')||'';
+  return /\\/articles\\/\\d+/.test(h)||/articleid=\\d+/.test(h);
+});
+
+/* ── 2단계: 링크 없으면 전체 숫자경로 링크 탐색 (fallback) ── */
+if(!links.length){
+  links=Array.from(document.querySelectorAll('a[href]')).filter(function(a){
+    var h=a.getAttribute('href')||'';
+    return /\\/\\d{7,}(?:[?#/]|$)/.test(h)&&!h.includes('javascript');
+  });
+}
+
+if(!links.length){
+  alert('❌ 게시글 링크를 찾지 못했습니다.\\n\\n현재 URL:\\n'+location.href+'\\n\\n카페 게시판 목록 페이지에서 실행하세요.\\n(예: menus/0 페이지)');
+  return;
+}
+
+/* ── 3단계: 중복 제거 후 파싱 ── */
+var seen=new Set();
+var arts=[];
+links.forEach(function(a){
+  var href=a.getAttribute('href')||'';
+  var artM=href.match(/\\/articles\\/(\\d+)/)||href.match(/articleid=(\\d+)/)||href.match(/\\/(\\d{7,})(?:[?#]|$)/);
+  if(!artM)return;
+  var artId=artM[1];
+  if(seen.has(artId))return;
+  seen.add(artId);
+
+  /* 컨테이너 탐색 — li, article, tr, 또는 공통 부모 div */
+  var box=a.closest('li,article,tr,[class*="Article"],[class*="article"],[class*="BoardItem"],[class*="PostItem"]')||a.parentElement;
+
+  /* 제목 추출 — 우선순위 순 */
+  var title='';
+  /* ① 컨테이너 내 타이틀 클래스 요소 */
+  var tEl=box&&box.querySelector('[class*="title" i],[class*="subject" i],[class*="tit" i],[class*="name" i]');
+  if(tEl)title=tEl.innerText||tEl.textContent||'';
+  /* ② 링크 직접 텍스트 */
+  if(!title||title.trim().length<3)title=a.innerText||a.textContent||'';
+  /* ③ aria-label / title 속성 */
+  if(!title||title.trim().length<3)title=a.getAttribute('aria-label')||a.getAttribute('title')||'';
+  title=title.replace(/\\s+/g,' ').trim();
+  if(!title||title.length<2)return;
+
+  /* 날짜 추출 */
+  var date='';
+  var dEl=box&&box.querySelector('time,[class*="date" i],[class*="Date"],[class*="ago" i]');
+  if(dEl)date=(dEl.getAttribute('datetime')||dEl.innerText||dEl.textContent).trim();
+
+  arts.push({title:title,url:a.href,date:date,articleId:artId});
+});
+
+if(!arts.length){
+  alert('⚠️ 링크 '+links.length+'개 발견했으나 제목 추출 실패\\n\\n링크 예시:\\n'+(links.slice(0,3).map(function(a){return a.href;}).join('\\n')));
+  return;
+}
+
+/* ── 4단계: BroadcastChannel 전송 ── */
+var cafeM=location.href.match(/cafes\\/(\\d+)/);
+var cafeId=cafeM?cafeM[1]:'unknown';
+var bc=new BroadcastChannel('naver_cafe_collector');
+bc.postMessage({type:'articles',cafeId:cafeId,cafeName:document.title,articles:arts});
+bc.close();
+alert('✅ '+arts.length+'건 전송 완료!\\n수집 툴 탭으로 이동하세요.');
+})();`;
+
+  const el = document.getElementById('bookmarkletLink');
+  if (el) el.setAttribute('href', 'javascript:' + encodeURIComponent(bmCode));
 })();
 
 // Category toggle
