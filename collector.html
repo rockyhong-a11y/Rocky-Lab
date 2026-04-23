@@ -176,11 +176,11 @@ tbody tr:hover td{background:#1c2128}
       </label>
       <label class="site-item">
         <input type="checkbox" value="naver_cpyv26">
-        <div class="site-label"><strong>네이버카페 – 컴프야2026 버그신고</strong><small>cafe.naver.com · 쿠키 필요</small></div>
+        <div class="site-label"><strong>네이버카페 – MLB9이닝스</strong><small>cafe.naver.com/f-e/cafes/27851354 · 쿠키 필요</small></div>
       </label>
       <label class="site-item">
         <input type="checkbox" value="naver_9innings26">
-        <div class="site-label"><strong>네이버카페 – 9이닝스26 버그신고</strong><small>cafe.naver.com · 쿠키 필요</small></div>
+        <div class="site-label"><strong>네이버카페 – 컴프야26</strong><small>cafe.naver.com/f-e/cafes/28683505 · 쿠키 필요</small></div>
       </label>
     </div>
   </div>
@@ -839,18 +839,18 @@ document.getElementById('btnStart').addEventListener('click', async () => {
     }
 
     if (sites.includes('naver_cpyv26')) {
-      log('=== 네이버카페 컴프야2026 버그신고 수집 시작 ===', 'info');
-      const p = await scrapeNaverCafe('컴프야2026', '27851354', '31', '컴프야V', dateFrom, dateTo, log);
+      log('=== 네이버카페 MLB9이닝스 수집 시작 ===', 'info');
+      const p = await scrapeNaverCafe('MLB9이닝스', '27851354', '0', 'MLB9이닝스', dateFrom, dateTo, log);
       allPosts.push(...p);
-      log(`네이버카페 컴프야2026 완료: ${p.length}건`);
+      log(`네이버카페 MLB9이닝스 완료: ${p.length}건`);
       doneSites++; setProgress(Math.round(doneSites/totalSites*80), `수집 중... (${doneSites}/${totalSites})`);
     }
 
     if (sites.includes('naver_9innings26')) {
-      log('=== 네이버카페 9이닝스26 버그신고 수집 시작 ===', 'info');
-      const p = await scrapeNaverCafe('9이닝스26', '28683505', '33', 'MLB9이닝스', dateFrom, dateTo, log);
+      log('=== 네이버카페 컴프야26 수집 시작 ===', 'info');
+      const p = await scrapeNaverCafe('컴프야26', '28683505', '0', '컴프야26', dateFrom, dateTo, log);
       allPosts.push(...p);
-      log(`네이버카페 9이닝스26 완료: ${p.length}건`);
+      log(`네이버카페 컴프야26 완료: ${p.length}건`);
       doneSites++; setProgress(Math.round(doneSites/totalSites*80), `수집 중... (${doneSites}/${totalSites})`);
     }
 
