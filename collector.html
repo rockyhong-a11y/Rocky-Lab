@@ -126,7 +126,7 @@ tbody tr:hover td{background:#1c2128}
     <h1>⚾ 야구 게임 커뮤니티 수집 툴</h1>
     <span class="badge">v2.0 Web</span>
   </div>
-  <div class="header-right">FM코리아 · DC인사이드 · 공식 커뮤니티</div>
+  <div class="header-right">FM코리아 · DC인사이드 · 공식 커뮤니티 · 네이버카페</div>
 </header>
 
 <div class="container">
@@ -178,6 +178,38 @@ tbody tr:hover td{background:#1c2128}
         <input type="checkbox" value="rivals_official" checked>
         <div class="site-label"><strong>MLB라이벌 공식 커뮤니티</strong><small>community.withhive.com</small></div>
       </label>
+      <label class="site-item">
+        <input type="checkbox" value="fm_cpyv">
+        <div class="site-label"><strong>FM코리아 – 컴프야V 카테고리</strong><small>category=6775340805</small></div>
+      </label>
+      <label class="site-item">
+        <input type="checkbox" value="fm_rivals">
+        <div class="site-label"><strong>FM코리아 – MLB라이벌 카테고리</strong><small>category=6775341164</small></div>
+      </label>
+      <label class="site-item">
+        <input type="checkbox" value="naver_cpyv26">
+        <div class="site-label"><strong>네이버카페 – 컴프야2026 버그신고</strong><small>cafe.naver.com · 쿠키 필요</small></div>
+      </label>
+      <label class="site-item">
+        <input type="checkbox" value="naver_9innings26">
+        <div class="site-label"><strong>네이버카페 – 9이닝스26 버그신고</strong><small>cafe.naver.com · 쿠키 필요</small></div>
+      </label>
+    </div>
+  </div>
+
+  <!-- ── 네이버 쿠키 설정 ── -->
+  <div class="card" id="naverCard" style="display:none">
+    <div class="card-title">🔑 네이버 카페 쿠키 설정</div>
+    <div class="notice warn">⚠️ 네이버 카페는 로그인 쿠키가 필요합니다. Chrome → F12 → Application → Cookies → cafe.naver.com 에서 값을 복사하세요.</div>
+    <div class="grid-2">
+      <div class="field">
+        <label class="field-label">NID_AUT</label>
+        <input type="text" id="nidAut" placeholder="NID_AUT 쿠키 값" style="background:#0d1117;border:1px solid #30363d;color:#e6edf3;padding:9px 12px;border-radius:8px;font-size:11px;width:100%;font-family:monospace">
+      </div>
+      <div class="field">
+        <label class="field-label">NID_SES</label>
+        <input type="text" id="nidSes" placeholder="NID_SES 쿠키 값" style="background:#0d1117;border:1px solid #30363d;color:#e6edf3;padding:9px 12px;border-radius:8px;font-size:11px;width:100%;font-family:monospace">
+      </div>
     </div>
   </div>
 
@@ -281,9 +313,65 @@ async function proxyPost(url, body, extraHeaders={}, timeout=15000) {
 // ═══════════════════════════════════════════════════════════════
 //  CLASSIFIERS
 // ═══════════════════════════════════════════════════════════════
-const BUG_KW    = ['버그','오류','에러','문제','안됨','안돼','이상','error','bug','crash','불가','먹통','튕','팅','강종','강제종료','로딩','접속','작동 안','클릭 안'];
-const OPINION_KW= ['건의','요청','개선','바랍니다','했으면','추가','제안','피드백','의견','suggestion'];
-const REVIEW_KW = ['후기','리뷰','평가','패치노트','업데이트','소감','추천','비추'];
+
+// ── 1. 버그: 기술적 오작동 · 크래시 · 기능 불가 ─────────────
+const BUG_KW = [
+  // 버그/오류/에러 직접 표현
+  '버그','오류','에러','error','bug','이슈','issue',
+  // 크래시·강제종료
+  '크래시','crash','강종','강제종료','팅김','튕김','튕겨','팅겨',
+  // 멈춤·프리징
+  '프리징','freezing','멈춤','멈춰','먹통','멈첬','응답없',
+  // 무한로딩·로딩 불가
+  '무한로딩','로딩 안','로딩안','로딩중','무한 로딩',
+  // 안됨·불가 계열
+  '안됨','안돼','안되는','안되네','않아요','않습니다','안 돼','안 됩니다',
+  '작동 안','작동안','클릭 안','눌러도 안','안 눌',
+  // 접속·로그인 불가
+  '접속 불가','접속이 안','접속안','로그인 불가','로그인 안','연결 안','연결안',
+  // 화면·UI 오류
+  '화면이 안','화면 깨','깨짐','안 보임','보이지 않','표시 안','표시가 안',
+  // 데이터·구매 오류
+  '데이터 사라','초기화됨','초기화 되','결제 오류','결제 안','구매 안','구매오류',
+];
+
+// ── 2. 의견/건의: 개선 요청 · 기능 제안 · 바람 ──────────────
+const OPINION_KW = [
+  // 직접 요청 명사
+  '건의','요청','제안','피드백','suggestion',
+  // ~해줬으면 / ~하면 좋겠다 패턴
+  '해줬으면','줬으면','하면 좋겠','했으면 좋겠','있으면 좋겠',
+  '됐으면','됐으면 좋겠','좋겠습니다','좋겠어요','좋겠네요',
+  // 추가·개선 요청
+  '추가해주','추가됐으면','추가 부탁','개선해주','개선 요청','개선됐으면',
+  '넣어주세요','넣어줬으면','만들어주','해주세요','해주셨으면','해주면',
+  // ~없나요 / ~어떤가요 / ~언제
+  '없나요','왜없나','왜 없나','없을까요','언제 추가','언제쯤','도입해주',
+  // 바랍니다·부탁
+  '바랍니다','바래요','바라겠습니다','부탁드립니다','부탁합니다','부탁이에요',
+  // 의견 서술
+  '생각인데','의견인데','의견입니다','어떻게 생각','제 생각엔',
+];
+
+// ── 3. 평가/후기: 개인 소감 · 만족/불만족 · 업데이트 반응 ───
+const REVIEW_KW = [
+  // 후기·리뷰·평가 명사
+  '후기','리뷰','평가','소감','느낌','감상','총평','종합 평가',
+  // 패치·업데이트 이후 반응 (요청이 아닌 감상)
+  '패치 후','패치하고','패치노트','업데이트 후','업데이트하고','업뎃 후','업뎃하고',
+  '업데이트 이후','업뎃 이후','업데이트 전후','패치 이후',
+  // 재밌다·별로다 계열
+  '재밌다','재밌어','재밌네','재미있다','재미있어','재미없','재미가 없','재미가없',
+  '별로다','별로네','별로임','별로인','실망이','실망스','만족스','만족해',
+  '좋아졌','나빠졌','망했','망해가','흥미롭','흥미없','흥미가 없',
+  '괜찮아졌','나쁘지 않','나쁘지않','해볼만','할만하',
+  // 점수·추천
+  '별점','점수','평점','추천','비추',
+  // 해보니·해봤는데
+  '해보니','해봤는데','해봤더니','해보면','플레이해보',
+  // 전반적으로
+  '전반적으로','전체적으로','전체 적으로',
+];
 
 const GAME_MAP  = {
   '컴프야V':    ['컴프야v','cpyv','v26','cpbv','컴프야26','컴투스프로야구v'],
@@ -292,20 +380,25 @@ const GAME_MAP  = {
   '컴프야26':   ['컴프야26','cpb26','컴2026'],
 };
 
-const SEV_CRITICAL = ['결제','과금','구매','충전','접속 불가','로그인 불가','크래시','crash','삭제','초기화','데이터 유실','critical','치명'];
-const SEV_HIGH     = ['오류','error','버그','bug','안됨','불가','강종','강제종료','먹통'];
+const SEV_CRITICAL = ['결제','과금','충전','접속 불가','로그인 불가','크래시','crash','초기화','데이터 유실','데이터 사라','critical','치명'];
+const SEV_HIGH     = ['오류','error','버그','bug','강종','강제종료','먹통','팅김','튕김','프리징','안됨','불가'];
 
 function classifyCategory(title, body, activeFilters) {
-  const t = (title+' '+body).toLowerCase();
+  const t = (title + ' ' + body).toLowerCase();
+
+  // 버그 우선 판별 (기술 오작동이 가장 명확)
   let cat = '기타';
-  if (BUG_KW.some(k => t.includes(k)))    cat = '버그';
-  else if (OPINION_KW.some(k => t.includes(k))) cat = '의견';
-  else if (REVIEW_KW.some(k => t.includes(k)))  cat = '평가';
+  if (BUG_KW.some(k => t.includes(k))) {
+    cat = '버그';
+  } else if (OPINION_KW.some(k => t.includes(k))) {
+    cat = '의견';
+  } else if (REVIEW_KW.some(k => t.includes(k))) {
+    cat = '평가';
+  }
 
   if (activeFilters.has('전체')) return cat;
   if (activeFilters.has(cat))    return cat;
-  if (cat === '기타' && activeFilters.has('전체')) return cat;
-  return null; // filtered out
+  return null;
 }
 
 function classifyGame(title, body, hint='') {
@@ -591,6 +684,149 @@ async function scrapeRivalsOfficial(dateFrom, dateTo, log) {
 }
 
 // ═══════════════════════════════════════════════════════════════
+//  FM코리아 카테고리 SCRAPER
+// ═══════════════════════════════════════════════════════════════
+async function scrapeFmkoreaCategory(categoryId, gameName, dateFrom, dateTo, log) {
+  const BASE = 'https://www.fmkorea.com';
+  const posts = [];
+
+  for (let page = 1; page <= 7; page++) {
+    const url = page === 1
+      ? `${BASE}/index.php?mid=baseball_game&category=${categoryId}`
+      : `${BASE}/index.php?mid=baseball_game&category=${categoryId}&page=${page}`;
+    log(`FM코리아 ${gameName} 카테고리 페이지 ${page}`, 'info');
+    const html = await proxyGet(url);
+    if (!html) { log(`  → 응답 없음, 중단`, 'warn'); break; }
+
+    const trs = [...html.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/g)].map(m => m[1]);
+    let oldestDate = '9999', pageCount = 0;
+
+    for (const tr of trs) {
+      if (!tr.includes('<td class="title')) continue;
+      const urlM = tr.match(/href="(\/\d{9,13})"/);
+      if (!urlM) continue;
+      const postUrl = BASE + urlM[1];
+
+      const anchorM = tr.match(/href="\/\d{9,13}"[^>]*>([\s\S]*?)<\/a>/);
+      const title = anchorM ? esc(stripTags(anchorM[1])) : '';
+      if (!title) continue;
+
+      const catM = tr.match(/<td class="cate"[^>]*>[\s\S]*?<a[^>]*>([\s\S]*?)<\/a>/);
+      const fmCat = catM ? stripTags(catM[1]) : '';
+
+      const timeM = tr.match(/<td class="time">\s*([\s\S]*?)\s*<\/td>/);
+      const dateRaw = timeM ? stripTags(timeM[1]) : '';
+      const dateStr = parseFmDate(dateRaw);
+      if (!dateStr) continue;
+      if (dateStr < oldestDate) oldestDate = dateStr;
+      if (dateStr < dateFrom || dateStr > dateTo) continue;
+
+      const viewM = tr.match(/<td class="m_no">\s*(\d+)\s*<\/td>/);
+      posts.push({ title, url: postUrl, date: dateStr, views: viewM ? viewM[1] : '0',
+                   source: `FM코리아(${gameName})`, game: gameName, hint: fmCat, body: '', images: [] });
+      pageCount++;
+    }
+    log(`  → ${pageCount}건 수집, 최소날짜=${oldestDate}`);
+    if (oldestDate < dateFrom) break;
+    await sleep(2000);
+  }
+
+  // Detail fetch
+  log(`FM코리아 ${gameName} 본문 수집 (${posts.length}건)...`, 'info');
+  for (let i = 0; i < posts.length; i++) {
+    try {
+      const html = await proxyGet(posts[i].url);
+      if (html) {
+        const bm = html.match(/<div[^>]*class="xe_content"[^>]*>([\s\S]*?)<\/div>/);
+        if (bm) {
+          const imgs = [...bm[1].matchAll(/<img[^>]*src=["']([^"']+)["']/g)].map(m => m[1])
+                        .filter(u => !/icon|logo|level|profile|\.gif/i.test(u));
+          posts[i].images = imgs.slice(0, 2);
+          posts[i].body = esc(stripTags(bm[1])).slice(0, 500);
+        }
+      }
+    } catch {}
+    if ((i + 1) % 5 === 0) log(`  본문 ${i + 1}/${posts.length}`);
+    await sleep(1200);
+  }
+  return posts;
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  네이버 카페 SCRAPER  (CORS 프록시 경유)
+// ═══════════════════════════════════════════════════════════════
+async function scrapeNaverCafe(cafeName, cafeId, menuId, gameName, dateFrom, dateTo, log) {
+  const nidAut = document.getElementById('nidAut').value.trim();
+  const nidSes = document.getElementById('nidSes').value.trim();
+  if (!nidAut && !nidSes) {
+    log(`⚠️ 네이버 쿠키 미입력 — ${cafeName} 수집 건너뜀`, 'warn');
+    return [];
+  }
+
+  // CORS 프록시는 쿠키 전달이 불가하므로, allorigins.win 으로 시도 후 실패 시 안내
+  const posts = [];
+  const today_str = today();
+
+  for (let page = 1; page <= 5; page++) {
+    const url = `https://m.cafe.naver.com/ArticleList.nhn`
+              + `?search.clubid=${cafeId}&search.menuid=${menuId}`
+              + `&search.page=${page}&userDisplay=50`;
+    log(`네이버카페 ${cafeName} 페이지 ${page}`, 'info');
+
+    // allorigins.win 은 쿠키를 전달할 수 없어 로그인 필요 페이지는 리다이렉트될 수 있음
+    const html = await proxyGet(url, 20000);
+    if (!html || html.length < 300) {
+      log(`  → 응답 없음 (CORS 제한 또는 로그인 필요)`, 'warn');
+      log(`  → 💡 Python 서버(baseball_collector.py)를 사용하면 쿠키 인증으로 수집 가능`, 'warn');
+      break;
+    }
+
+    // Check for login redirect
+    if (html.includes('nid.naver.com/nidlogin') || html.includes('로그인') && html.length < 2000) {
+      log(`  → 로그인 페이지 리다이렉트 — CORS 프록시에서 쿠키 전달 불가`, 'warn');
+      log(`  → 💡 Python 버전(baseball_collector.py)으로 쿠키 인증 수집 사용 권장`, 'warn');
+      break;
+    }
+
+    const liBlocks = [...html.matchAll(/<li[^>]*>([\s\S]*?)<\/li>/g)].map(m => m[1]);
+    let oldestDate = '9999', pageCount = 0;
+
+    for (const block of liBlocks) {
+      const artM = block.match(/articleid=(\d+)/) || block.match(/href="[^"]+\/(\d{6,})"/);
+      if (!artM) continue;
+      const artId = artM[1];
+
+      const tM = block.match(/class="[^"]*title[^"]*"[^>]*>([\s\S]*?)<\//) ||
+                 block.match(/<strong[^>]*>([\s\S]*?)<\/strong>/) ||
+                 block.match(/articleid=\d+[^>]*>([\s\S]*?)<\/a>/);
+      const title = tM ? esc(stripTags(tM[1])).trim() : '';
+      if (!title || title.length < 2) continue;
+
+      const dM = block.match(/(\d{4})[.\-\/](\d{2})[.\-\/](\d{2})/);
+      let dateStr = today_str;
+      if (dM) dateStr = `${dM[1]}-${dM[2]}-${dM[3]}`;
+      else {
+        const dM2 = block.match(/(\d{2})[./](\d{2})/);
+        if (dM2) dateStr = `${new Date().getFullYear()}-${dM2[1].padStart(2,'0')}-${dM2[2].padStart(2,'0')}`;
+      }
+
+      const postUrl = `https://cafe.naver.com/ArticleRead.nhn?clubid=${cafeId}&articleid=${artId}`;
+      if (dateStr < oldestDate) oldestDate = dateStr;
+      if (dateStr < dateFrom || dateStr > dateTo) continue;
+
+      posts.push({ title, url: postUrl, date: dateStr, views: '0',
+                   source: `네이버카페(${cafeName})`, game: gameName, body: '', images: [] });
+      pageCount++;
+    }
+
+    log(`  → ${pageCount}건 수집, 최소날짜=${oldestDate}`);
+    if (oldestDate < dateFrom || !pageCount) break;
+    await sleep(600);
+  }
+  return posts;
+}
+
+// ═══════════════════════════════════════════════════════════════
 //  EXCEL BUILDER  (SheetJS)
 // ═══════════════════════════════════════════════════════════════
 function buildExcel(allResults) {
@@ -669,10 +905,15 @@ document.querySelectorAll('.cat-btn').forEach(btn => {
   });
 });
 
-// Site item checked state
+// Site item checked state + show/hide Naver cookie panel
 document.querySelectorAll('.site-item input').forEach(cb => {
   cb.addEventListener('change', () => {
     cb.closest('.site-item').classList.toggle('checked', cb.checked);
+    // Show Naver cookie card if any naver site is checked
+    const naverSites = ['naver_cpyv26', 'naver_9innings26'];
+    const anyNaver = [...document.querySelectorAll('.site-item input:checked')]
+                       .some(c => naverSites.includes(c.value));
+    document.getElementById('naverCard').style.display = anyNaver ? 'block' : 'none';
   });
 });
 
@@ -757,6 +998,38 @@ document.getElementById('btnStart').addEventListener('click', async () => {
       const p = await scrapeRivalsOfficial(dateFrom, dateTo, log);
       allPosts.push(...p);
       log(`MLB라이벌 공식 완료: ${p.length}건`);
+      doneSites++; setProgress(Math.round(doneSites/totalSites*80), `수집 중... (${doneSites}/${totalSites})`);
+    }
+
+    if (sites.includes('fm_cpyv')) {
+      log('=== FM코리아 컴프야V 카테고리 수집 시작 ===', 'info');
+      const p = await scrapeFmkoreaCategory('6775340805', '컴프야V', dateFrom, dateTo, log);
+      allPosts.push(...p);
+      log(`FM코리아 컴프야V 카테고리 완료: ${p.length}건`);
+      doneSites++; setProgress(Math.round(doneSites/totalSites*80), `수집 중... (${doneSites}/${totalSites})`);
+    }
+
+    if (sites.includes('fm_rivals')) {
+      log('=== FM코리아 MLB라이벌 카테고리 수집 시작 ===', 'info');
+      const p = await scrapeFmkoreaCategory('6775341164', 'MLB라이벌', dateFrom, dateTo, log);
+      allPosts.push(...p);
+      log(`FM코리아 MLB라이벌 카테고리 완료: ${p.length}건`);
+      doneSites++; setProgress(Math.round(doneSites/totalSites*80), `수집 중... (${doneSites}/${totalSites})`);
+    }
+
+    if (sites.includes('naver_cpyv26')) {
+      log('=== 네이버카페 컴프야2026 버그신고 수집 시작 ===', 'info');
+      const p = await scrapeNaverCafe('컴프야2026', '27851354', '31', '컴프야V', dateFrom, dateTo, log);
+      allPosts.push(...p);
+      log(`네이버카페 컴프야2026 완료: ${p.length}건`);
+      doneSites++; setProgress(Math.round(doneSites/totalSites*80), `수집 중... (${doneSites}/${totalSites})`);
+    }
+
+    if (sites.includes('naver_9innings26')) {
+      log('=== 네이버카페 9이닝스26 버그신고 수집 시작 ===', 'info');
+      const p = await scrapeNaverCafe('9이닝스26', '28683505', '33', 'MLB9이닝스', dateFrom, dateTo, log);
+      allPosts.push(...p);
+      log(`네이버카페 9이닝스26 완료: ${p.length}건`);
       doneSites++; setProgress(Math.round(doneSites/totalSites*80), `수집 중... (${doneSites}/${totalSites})`);
     }
 
